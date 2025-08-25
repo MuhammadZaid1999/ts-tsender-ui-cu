@@ -12,5 +12,3 @@ export const chainsToTsSender: ContractsConfig = {
         tsender: ""
     }
 };
-
-export 
