@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "anvil": "anvil --load-state tsender-deployed.json"
+    "anvil": "anvil --load-state tsender-deployed.json",
+    "test:unit": "vitest"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.8",

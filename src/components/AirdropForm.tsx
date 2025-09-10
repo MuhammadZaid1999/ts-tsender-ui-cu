@@ -1,20 +1,27 @@
 "use client"; 
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import InputField from "@/components/ui/InputField";
 import { chainsToTsSender, erc20Abi } from "@/constants";
 import { useChainId, useConfig, useAccount } from "wagmi";
 import { Config, readContract } from "@wagmi/core";
+import { calculateTotal } from '@/utils'; // Import using the barrel file path
 
 export default function AirdropForm() {
     const [tokenAddress, setTokenAddress] = useState<string>("");
     const [recipients, setRecipients] = useState<string>(""); 
-    const [amounts, setAmounts] = useState<number>(0); 
+    const [amounts, setAmounts] = useState<string>(""); 
 
     // Get dynamic data using wagmi hooks
     const account = useAccount();
     const chainId = useChainId();
     const config = useConfig(); // Required for core actions like readContract
+
+    // Calculate the total only when the 'amounts' string changes
+    const totalAmountNeeded: number = useMemo(() => {
+        // We'll define the calculation logic in a separate function
+        return calculateTotal(amounts);
+    }, [amounts]); // Dependency array: recalculate only if 'amounts' changes
 
     async function handleSubmit() {
         console.log("Token Address:", tokenAddress);
@@ -105,12 +112,16 @@ export default function AirdropForm() {
 
                 <InputField
                     label="Amounts"
-                    placeholder="100, 200, ..."
+                    placeholder="Enter amounts, separated by commas or newlines..."
                     value={amounts}
                     type="number"
-                    onChange={e => setAmounts(Number(e.target.value))}
+                    onChange={e => setAmounts(e.target.value)}
                     large={true}
                 />
+                  <div>
+                    <strong>Total Amount: {totalAmountNeeded}</strong>
+                </div>
+
 
                 <button type="submit">Send Tokens</button>
             </form>
