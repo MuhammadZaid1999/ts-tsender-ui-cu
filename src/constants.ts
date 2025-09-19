@@ -1,6 +1,6 @@
 interface ContractsConfig {
     [chainId: number]: {
-        tsender: string,
+        tsender: string
     }
 };
 
@@ -19,5 +19,32 @@ export const erc20Abi = [
 ]; 
 
 export const tsenderAbi = [
-  { type: "function", name: "airdropERC20", inputs: [/*...*/], outputs: [], stateMutability: "payable" },
-] 
+    {
+        type: "function",
+        name: "airdropERC20",
+        inputs: [
+            {
+                name: "tokenAddress",
+                type: "address",
+                internalType: "address",
+            },
+            {
+                name: "recipients",
+                type: "address[]",
+                internalType: "address[]",
+            },
+            {
+                name: "amounts",
+                type: "uint256[]",
+                internalType: "uint256[]",
+            },
+            {
+                name: "totalAmount",
+                type: "uint256",
+                internalType: "uint256",
+            },
+        ],
+        outputs: [],
+        stateMutability: "nonpayable",
+    }
+]

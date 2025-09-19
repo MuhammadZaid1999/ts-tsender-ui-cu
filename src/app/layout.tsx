@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body>
+			<body className="bg-zinc-50">
 				{/* Wrap the entire body content with Providers */}
 				<Providers>
 					<Header /> 
