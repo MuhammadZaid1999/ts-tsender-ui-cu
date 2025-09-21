@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import InputField from "@/components/ui/InputField";
 import { chainsToTsSender, erc20Abi, tsenderAbi } from "@/constants";
-import { useChainId, useConfig, useAccount } from "wagmi";
+import { useChainId, useConfig, useAccount, useReadContracts } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { calculateTotal } from '@/utils'; // Import using the barrel file path
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
@@ -23,6 +23,32 @@ export default function AirdropForm() {
         hash,
         confirmations: 1,
     });
+    const { data: tokenDetails, isLoading: isLoadingTokenDetails } = useReadContracts({
+        contracts: [
+            {
+                abi: erc20Abi,
+                address: tokenAddress as `0x${string}`,
+                functionName: "decimals",
+            },
+            {
+                abi: erc20Abi,
+                address: tokenAddress as `0x${string}`,
+                functionName: "name",
+            },
+            {
+                abi: erc20Abi,
+                address: tokenAddress as `0x${string}`,
+                functionName: "symbol",
+                args: [account.address],
+            },
+            {
+                abi: erc20Abi,
+                address: tokenAddress as `0x${string}`,
+                functionName: "balanceOf",
+                args: [account.address],
+            },
+        ],
+    })
 
     // Calculate the total only when the 'amounts' string changes
     const totalAmountNeeded: number = useMemo(() => {
@@ -109,39 +135,6 @@ export default function AirdropForm() {
         }
     }
 
-    function getButtonContent() {
-        if (isPending) {
-            return (
-                <div className="flex items-center justify-center gap-2 w-full">
-                    <CgSpinner className="animate-spin" size={20} />
-                    <span>Confirming in wallet...</span>
-                </div>
-            )
-        }
-        if (isConfirming) {
-            return (
-                <div className="flex items-center justify-center gap-2 w-full">
-                    <CgSpinner className="animate-spin" size={20} />
-                    <span>Sending transaction...</span>
-                </div>
-            )
-        }
-        if (error || isError) {
-            return (
-                <div className="flex items-center justify-center gap-2 w-full">
-                    <span>{"Error occurred."}</span>
-                </div>
-            )
-        }
-        if (isConfirmed) {
-            return <span>Transaction Confirmed!</span>
-        }
-
-        // Default button text
-        return "Send Tokens";
-    }
-
-
     async function getAppprovedAmount(
         spenderAddress: `0x${string}`,
         erc20TokenAddress: `0x${string}`,
@@ -217,6 +210,60 @@ export default function AirdropForm() {
         }
     }
 
+    function getButtonContent() {
+        if (isPending) {
+            return (
+                <div className="flex items-center justify-center gap-2 w-full">
+                    <CgSpinner className="animate-spin" size={20} />
+                    <span>Confirming in wallet...</span>
+                </div>
+            )
+        }
+        if (isConfirming) {
+            return (
+                <div className="flex items-center justify-center gap-2 w-full">
+                    <CgSpinner className="animate-spin" size={20} />
+                    <span>Sending transaction...</span>
+                </div>
+            )
+        }
+        if (error || isError) {
+            return (
+                <div className="flex items-center justify-center gap-2 w-full">
+                    <span>{"Error occurred."}</span>
+                </div>
+            )
+        }
+        if (isConfirmed) {
+            return <span>Transaction Confirmed!</span>
+        }
+
+        // Default button text
+        return "Send Tokens";
+    }
+
+    // Retrieve data on component mount
+    useEffect(() => {
+        const savedAddress = localStorage.getItem("tokenAddress");
+        const savedRecipients = localStorage.getItem("recipients");
+        const savedAmounts = localStorage.getItem("amounts");
+        if(savedAddress) setTokenAddress(savedAddress);
+        if(savedRecipients) setRecipients(savedRecipients);
+        if(savedAmounts) setAmounts(savedAmounts);
+    },[])
+
+    useEffect(() => {
+        if(tokenAddress) localStorage.setItem("tokenAddress", tokenAddress);
+    },[tokenAddress])
+
+    useEffect(() => {
+        if(recipients) localStorage.setItem("recipients", recipients);
+    },[recipients])
+
+    useEffect(() => {
+        if(amounts) localStorage.setItem("amounts", amounts);
+    },[amounts])
+
     return (
         <div className="p-4-space-y-4 gap-6">
             <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
@@ -247,10 +294,30 @@ export default function AirdropForm() {
                     onChange={e => setAmounts(e.target.value)}
                     large={true}
                 />
-                <div>
-                    <strong>Total Amount: {totalAmountNeeded}</strong>
-                </div>
                 <br />
+
+                <div className="bg-white border border-zinc-300 rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-zinc-900 mb-3">Transaction Details</h3>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-zinc-600">Token Name:</span>
+                            <span className="font-mono text-zinc-900">
+                                {tokenDetails?.[1]?.result as string}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-zinc-600">Amount (wei):</span>
+                            <span className="font-mono text-zinc-900">{totalAmountNeeded}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-zinc-600">Amount (tokens):</span>
+                            <span className="font-mono text-zinc-900">
+                                {totalAmountNeeded / Math.pow(10, tokenDetails?.[0]?.result as number)} {tokenDetails?.[2]?.result as string}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br/>
 
                 <button type="submit" disabled={isPending || isConfirming} className="cursor-pointer py-3 px-3 rounded-[9px] text-white transition-colors font-semibold relative border bg-blue-500 hover:bg-blue-600 border-blue-500">
                     {getButtonContent()}
