@@ -38,8 +38,7 @@ export default function AirdropForm() {
             {
                 abi: erc20Abi,
                 address: tokenAddress as `0x${string}`,
-                functionName: "symbol",
-                args: [account.address],
+                functionName: "symbol"
             },
             {
                 abi: erc20Abi,
