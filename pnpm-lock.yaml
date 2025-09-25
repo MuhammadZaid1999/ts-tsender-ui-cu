@@ -11,6 +11,9 @@ importers:
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.8
         version: 2.2.8(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react@19.1.11)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(viem@2.34.0(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.22.4))(wagmi@2.16.5(@tanstack/query-core@5.85.5)(@tanstack/react-query@5.85.5(react@19.1.0))(@types/react@19.1.11)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.34.0(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.22.4))(zod@3.22.4))
+      '@synthetixio/synpress-cache':
+        specifier: 0.0.13
+        version: 0.0.13(playwright-core@1.55.1)(postcss@8.5.6)(typescript@5.9.2)
       '@tanstack/react-query':
         specifier: ^5.85.5
         version: 5.85.5(react@19.1.0)

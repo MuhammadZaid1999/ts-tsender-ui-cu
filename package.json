@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.8",
+    "@synthetixio/synpress-cache": "0.0.13",
     "@tanstack/react-query": "^5.85.5",
     "@wagmi/core": "^2.20.0",
     "next": "15.5.0",
