@@ -1,5 +1,5 @@
 'use client'; // Required for client-side hooks like useAccount
-import AirdropForm from "@/components/AirdropForm";
+
 import HomeContent from "@/components/ui/HomeContent";
 import { useAccount } from "wagmi"; // Import the wagmi hook 
 
